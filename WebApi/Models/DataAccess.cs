@@ -83,13 +83,7 @@ namespace WebApi.Models
             {
                 product = context.Products
                     .Where(x => x.ProductId == id)
-                    .Select(p => new ProductDetails()
-                    {
-                        ProductId = p.ProductId,
-                        ProductName = p.ProductName,
-                        ProductDescription = p.ProductDescription,
-                        ProductModelName = p.ProductModelName
-                    }).FirstOrDefault();
+                    .FirstOrDefault();
             }
             return product;
         }
