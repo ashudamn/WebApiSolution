@@ -58,11 +58,8 @@ namespace WebApi.Controllers
                         Trace.WriteLine(file.Headers.ContentDisposition.FileName);
                         Trace.WriteLine("Server file path: " + file.LocalFileName);
                     }
-
                     //getting file name and saving it to db
-                    DetailsSavedToDb(provider);
-                    
-                    
+                    DataAccess.AddProduct(provider);
                     return Request.CreateResponse(HttpStatusCode.OK);
                 });
             
@@ -70,29 +67,7 @@ namespace WebApi.Controllers
             return task;
         }
 
-        private void DetailsSavedToDb(MultipartFormDataStreamProvider provider)
-        {
-            ProductContainer productContainer = new ProductContainer();
-            productContainer.ProductImage = new Models.FileInfo();
-            string filename=String.Empty, filepath=String.Empty;
-            foreach (MultipartFileData file in provider.FileData)
-            {
-                filename = file.Headers.ContentDisposition.FileName;
-                filepath = file.LocalFileName;
-            }
-            var model = provider.FormData["product"];
-            var jsonObj = JObject.Parse(model);
-            var product = JsonConvert.DeserializeObject<ProductDetails>(jsonObj.ToString());
-            product.ProductImageFile = File.ReadAllBytes(filepath);
-            product.ProductFileName = filename;
-            using (var ctx = new MarketContext())
-            {
-                var stud = product;
-                ctx.Products.Add(product);
-                ctx.SaveChanges();
-            }
-           
-        }
+        
 
         // PUT api/values/5
         public void Put(int id, [FromBody]string value)

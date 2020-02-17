@@ -10,9 +10,10 @@ namespace WebApi.Models
     {
         public MarketContext() : base("name=MarketDBConnectionString")
         {
-            //Database.SetInitializer<MarketContext>(new DropCreateDatabaseAlways<MarketContext>());
+            //Database.SetInitializer<MarketContext>(new C<MarketContext>());
         }
         public DbSet<UserDetails> Users { get; set; }
         public DbSet<ProductDetails> Products { get; set; }
+        public DbSet<ProductCategory> ProductCategories { get; set; }
     }
 }

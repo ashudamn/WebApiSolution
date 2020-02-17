@@ -13,6 +13,7 @@ namespace WebApi.Models
         public string ProductCategory { get; set; }
         public string ProductName { get; set; }
         public string ProductDescription { get; set; }
+        public string ProductModelName { get; set; }
         public bool AcceptTerms { get; set; }
         public Byte[] ProductImageFile { get; set; }
         public string ProductFileName { get; set; }

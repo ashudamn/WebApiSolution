@@ -7,7 +7,7 @@ namespace WebApi.Models
 {
     public class UserLoginDetails
     {
-        public string Email { set; get; }
-        public string Password { set; get; }
+        public string UserEmail { set; get; }
+        public string UserPassword { set; get; }
     }
 }

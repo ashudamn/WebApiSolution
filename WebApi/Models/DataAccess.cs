@@ -12,43 +12,40 @@ namespace WebApi.Models
     public class DataAccess
     {
         internal static MarketContext marketContext;
-        internal static void InitDbContext()
+        
+        public static UserDetails AddUser(UserDetails userDetails)
         {
-            marketContext=marketContext!=null?marketContext : new MarketContext();
-        }
-        public static void AddUser(UserDetails userDetails)
-        {
-            InitDbContext();
-            using (marketContext)
+            UserDetails user;
+            using (marketContext=new MarketContext())
             {
-                marketContext.Users.Add(userDetails);
+                user=marketContext.Users.Add(userDetails);
                 marketContext.SaveChanges();
             }
+            return user;
         }
-        public static void AddProduct(ProductDetails productDetails)
+        public ProductDetails  AddProduct(ProductDetails productDetails)
         {
-            InitDbContext();
-            using (marketContext)
+            ProductDetails productAdded ;
+            using (marketContext= new MarketContext())
             {
-                marketContext.Products.Add(productDetails);
+                productAdded=marketContext.Products.Add(productDetails);
                 marketContext.SaveChanges();
             }
+            return productAdded;
         }
         public static bool DoesUserExists(UserLoginDetails userLoginDetails)
         {
             bool found;
-            using (marketContext)
+            using (marketContext=new MarketContext())
             {
-                var user = marketContext.Users.Where(u=>
-                (u.Email==userLoginDetails.Email)
-                &&(u.Password==userLoginDetails.Password)
-                ).FirstOrDefault();
+                var user = marketContext.Users.Where(u=>(u.Email==userLoginDetails.UserEmail)&&(u.Password==userLoginDetails.UserPassword)).FirstOrDefault();
                 found = user != null ? true : false;
             }
             return found;
         }
        public static void AddProduct(MultipartFormDataStreamProvider provider)
         {
+           
             var model = provider.FormData["product"];
             var jsonObj = JObject.Parse(model);
             var product = JsonConvert.DeserializeObject<ProductDetails>(jsonObj.ToString());
@@ -60,22 +57,54 @@ namespace WebApi.Models
             }
             product.ProductImageFile = File.ReadAllBytes(filepath);
             product.ProductFileName = filename;
-            using (var ctx = new MarketContext())
+            using (marketContext=new MarketContext())
             {
                 var stud = product;
-                ctx.Products.Add(product);
-                ctx.SaveChanges();
+                marketContext.Products.Add(product);
+                marketContext.SaveChanges();
             }
 
         }
         public static List<ProductDetails> GetAllProducts()
         {
+           
             List<ProductDetails> allProducts;
-            using (var ctx = new MarketContext())
+            using (marketContext=new MarketContext())
             {
-                allProducts=ctx.Products.ToList<ProductDetails>();
+                allProducts = marketContext.Products.ToList<ProductDetails>();
             }
             return allProducts;
+        }
+        public static ProductDetails GetProduct(int id)
+        {
+            ProductDetails product = null;
+
+            using (var context = new MarketContext())
+            {
+                product = context.Products
+                    .Where(x => x.ProductId == id)
+                    .Select(p => new ProductDetails()
+                    {
+                        ProductId = p.ProductId,
+                        ProductName = p.ProductName,
+                        ProductDescription = p.ProductDescription,
+                        ProductModelName = p.ProductModelName
+                    }).FirstOrDefault();
+            }
+            return product;
+        }
+        public static List<ProductCategory> GetProductCategories()
+        {
+            List<ProductCategory> productCategories = null;
+            using (var context=new MarketContext())
+            {
+                productCategories = context.ProductCategories.ToList<ProductCategory>();
+            }
+            if(productCategories==null|| productCategories.Count == 0)
+            {
+                return null;
+            }
+            return productCategories; 
         }
     }
 }

@@ -18,26 +18,26 @@ namespace WebApi.Controllers
     {
         [HttpPost]
         [Route("Register")]
-        public async Task<HttpResponseMessage> UserRegister([FromBody] string userDetail)
+        public async Task<HttpResponseMessage> UserRegister(JObject userDetail)
         {
             var task = await Task<HttpResponseMessage>.Factory.StartNew(()=> {
-                //extract user details from request body
-                var userData = JObject.Parse(userDetail);
-                //save it to DB
-                var userDetailModel = JsonConvert.DeserializeObject<UserDetails>(userData.ToString());
-                DataAccess.AddUser(userDetailModel);
-                return Request.CreateResponse(HttpStatusCode.OK,"User Created successfully");
+                var userDetailModel = JsonConvert.DeserializeObject<UserDetails>(userDetail.ToString());
+                HttpResponseMessage httpResponse;
+                var user= DataAccess.AddUser(userDetailModel);
+                httpResponse =user!=null? Request.CreateResponse(HttpStatusCode.Created, "User Created successfully"): Request.CreateResponse(HttpStatusCode.InternalServerError, "Something went wrong"); ;
+                return httpResponse;
             });
             return task;
         }
 
         [HttpPost]
         [Route("Login")]
-        public async Task<HttpResponseMessage> UserLogin([FromBody] string userLoginDetail)
+        public async Task<HttpResponseMessage> UserLogin(JObject userDetailsJson)
         {
             var task = await Task<HttpResponseMessage>.Factory.StartNew(()=> {
                 HttpResponseMessage response=null;
-                if (DataAccess.DoesUserExists(JsonConvert.DeserializeObject<UserLoginDetails>(userLoginDetail)))
+                UserLoginDetails userDetails = JsonConvert.DeserializeObject<UserLoginDetails>(userDetailsJson.ToString());
+                if (DataAccess.DoesUserExists(userDetails))
                 {
                     response= Request.CreateResponse(HttpStatusCode.OK, "User Login successfully");
                 }

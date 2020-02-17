@@ -52,5 +52,38 @@ namespace WebApi.Controllers
             //var jsonResponse = Json(productList);
             return task;
         }
+        [HttpGet]
+        [Route("GetProductDetailsById/{id}")]
+        public IHttpActionResult GetProductDetailsById(int id)
+        {
+            ProductDetails product = DataAccess.GetProduct(id);
+            if (product == null)
+            {
+                return NotFound();
+            }
+            return Ok(product);
+        }
+
+        [HttpGet]
+        [Route("GetCategories")]
+        public async Task<HttpResponseMessage> GetCategories()
+        {
+            var task = await Task<HttpResponseMessage>.Factory.StartNew(() =>
+              {
+                  HttpResponseMessage httpResponse;
+                  List<ProductCategory> categories = DataAccess.GetProductCategories();
+                  if (categories == null)
+                  {
+                      httpResponse = Request.CreateResponse(HttpStatusCode.NotFound,"Categories Not found");
+                  }
+                  else
+                  {
+                      httpResponse = Request.CreateResponse(HttpStatusCode.OK,categories);
+                  }
+                  return httpResponse;
+              });
+            return task;
+        }
+
     }
 }
