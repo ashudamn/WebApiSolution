@@ -63,15 +63,21 @@ namespace WebApi.Models
                 marketContext.Products.Add(product);
                 marketContext.SaveChanges();
             }
+            File.Delete(filepath);
 
         }
-        public static List<ProductDetails> GetAllProducts()
+        public static List<ProductDTO> GetAllProducts()
         {
            
-            List<ProductDetails> allProducts;
+            List<ProductDTO> allProducts;
             using (marketContext=new MarketContext())
             {
-                allProducts = marketContext.Products.ToList<ProductDetails>();
+                allProducts = marketContext.Products.Where(product => product.ProductId != null).Select(product => new ProductDTO()
+                { ProductId = product.ProductId,
+                    ProductCategory = product.ProductCategory,
+                    ProductModelName=product.ProductModelName,
+                    ProductDescription=product.ProductDescription
+                }).ToList();
             }
             return allProducts;
         }

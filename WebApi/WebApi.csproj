@@ -187,6 +187,7 @@
     <Compile Include="Models\MarketContext.cs" />
     <Compile Include="Models\ProductCategory.cs" />
     <Compile Include="Models\ProductDetails.cs" />
+    <Compile Include="Models\ProductDTO.cs" />
     <Compile Include="Models\UserDetails.cs" />
     <Compile Include="Models\UserLoginDetails.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
